@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection } from "firebase/firestore";
+import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
     apiKey: "AIzaSyDBALzV_COhvkpO-A2z4UrWd-nzgimPJzg",
@@ -17,3 +18,4 @@ const db = getFirestore(app);
 export const positionsRef = collection(db, "openPositions");
 export const candidatesRef = collection(db, "candidates");
 export const configRef = collection(db, "config");
+export const auth = getAuth(app);
