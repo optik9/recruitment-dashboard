@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { positionsRef, configRef } from '../firebase/config';
 import { addDoc, getDoc, doc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom'; // Añadir este import
+import { CheckCircleIcon } from '@heroicons/react/24/outline';
 
 export default function PositionForm() {
   const navigate = useNavigate(); // Añadir este hook
@@ -271,9 +272,15 @@ export default function PositionForm() {
         </div>
       </div>
 
-      <button type="submit" className="form-submit-btn">
-        Save
-      </button>
+      <div className="flex justify-center mt-6">
+  <button 
+    type="submit" 
+    className="inline-flex items-center px-8 py-2.5 bg-gradient-to-r from-blue-800 to-indigo-900 hover:from-blue-900 hover:to-indigo-900 text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
+  >
+    <CheckCircleIcon className="w-5 h-5 mr-2" />
+    Save
+  </button>
+</div>
     </form>
   );
 }

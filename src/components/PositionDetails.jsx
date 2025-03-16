@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { positionsRef, configRef } from '../firebase/config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import '../App.css';
 
 export default function PositionDetails() {
@@ -319,18 +320,24 @@ export default function PositionDetails() {
           </div>
         </div>
 
-        <div className="form-footer">
-          <button type="submit" className="save-button">
-          Save
-          </button>
-          <button
-            type="button"
-            className="cancel-button"
-            onClick={() => navigate('/')}
-          >
-            Cancel
-          </button>
-        </div>
+        <div className="form-footer flex justify-center space-x-4 mt-8">
+  <button 
+    type="submit" 
+    className="inline-flex items-center px-6 py-2.5 bg-gradient-to-r from-blue-800 to-indigo-900 hover:from-blue-900 hover:to-indigo-900 text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
+  >
+    <CheckCircleIcon className="w-5 h-5 mr-2" />
+    Save
+  </button>
+  
+  <button
+    type="button"
+    className="inline-flex items-center px-6 py-2.5 border-2 border-indigo-900 text-indigo-900 hover:bg-indigo-50 rounded-lg text-sm font-medium transition-all"
+    onClick={() => navigate('/')}
+  >
+    <XCircleIcon className="w-5 h-5 mr-2" />
+    Cancel
+  </button>
+</div>
       </form>
     </div>
   );

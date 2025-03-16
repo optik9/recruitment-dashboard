@@ -14,8 +14,10 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
+//export { auth };
+export { auth, db }; // Modificar la exportación existente
 export const positionsRef = collection(db, "openPositions");
 export const candidatesRef = collection(db, "candidates");
 export const configRef = collection(db, "config");
-export const auth = getAuth(app);

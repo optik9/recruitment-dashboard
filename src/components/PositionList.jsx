@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { positionsRef } from '../firebase/config';
 import { getDocs } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
+import { PlusIcon, UserPlusIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import '../App.css';
+
 
 export default function PositionList() {
   const [positions, setPositions] = useState([]);
@@ -87,11 +89,12 @@ export default function PositionList() {
             </p>
           </div>
           <Link
-            to="/new-position"
-            className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium transition-colors"
-          >
-            + New Position
-          </Link>
+  to="/new-position"
+  className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-800 to-indigo-900 hover:from-blue-900 hover:to-indigo-900 text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
+>
+  <PlusIcon className="w-5 h-5 mr-2" />
+  New Position
+</Link>
         </div>
       </div>
 
@@ -187,20 +190,25 @@ export default function PositionList() {
                   <td className="px-4 py-3 text-sm text-gray-500">
                     {formatDate(position.fechaApertura)}
                   </td>
-                  <td className="px-4 py-3 text-sm font-medium space-x-2">
-                    <Link
-                      to={`/new-candidate?positionId=${position.id}`}
-                      className="text-indigo-600 hover:text-indigo-900 text-sm"
-                    >
-                      + Candidate
-                    </Link>
-                    <Link
-                      to={`/position/${position.id}`}
-                      className="text-gray-600 hover:text-gray-900 text-sm"
-                    >
-                      Edit
-                    </Link>
-                  </td>
+                  <td className="px-4 py-3">
+  <div className="flex items-center space-x-3">
+    <Link
+      to={`/new-candidate?positionId=${position.id}`}
+      className="inline-flex items-center px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-md text-sm font-medium transition-all shadow-sm hover:shadow-inner"
+    >
+      <UserPlusIcon className="w-4 h-4 mr-1.5" />
+      <span>Candidate</span>
+    </Link>
+    
+    <Link
+      to={`/position/${position.id}`}
+      className="inline-flex items-center px-3 py-1.5 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-700 rounded-md text-sm font-medium transition-all bg-white hover:bg-gray-50"
+    >
+      <PencilSquareIcon className="w-4 h-4 mr-1.5" />
+      <span>Edit</span>
+    </Link>
+  </div>
+</td>
                 </tr>
               ))}
             </tbody>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { candidatesRef, positionsRef, configRef } from '../firebase/config';
 import { getDocs, doc, updateDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
+import { PlusIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import '../App.css';
 
 export default function CandidateList() {
@@ -120,12 +121,16 @@ export default function CandidateList() {
               Manage and track all candidates
             </p>
           </div>
+        
+
           <Link
-            to="/new-candidate"
-            className="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-medium transition-colors"
-          >
-            + New Candidate
-          </Link>
+  to="/new-candidate"
+  className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-800 to-indigo-900 hover:from-blue-900 hover:to-indigo-900 text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
+>
+  <PlusIcon className="w-5 h-5 mr-2" />
+  New Candidate
+</Link>
+
         </div>
       </div>
   
@@ -222,12 +227,16 @@ export default function CandidateList() {
                     {candidate.disponibilidad}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                   
+
                     <Link
-                      to={`/candidate/${candidate.id}`}
-                      className="text-indigo-600 hover:text-indigo-900"
-                    >
-                      Update
-                    </Link>
+      to={`/candidate/${candidate.id}`}
+      className="inline-flex items-center px-3 py-1.5 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-700 rounded-md text-sm font-medium transition-all bg-white hover:bg-gray-50"
+    >
+      <PencilSquareIcon className="w-4 h-4 mr-1.5" />
+      <span>Edit</span>
+    </Link>
+
                   </td>
                 </tr>
               ))}
