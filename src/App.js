@@ -1,5 +1,7 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
+
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HelmetProvider } from 'react-helmet-async';
+//import Header from './components/Header';
 import PositionForm from './components/PositionForm';
 import CandidateForm from './components/CandidateForm';
 import PositionList from './components/PositionList';
@@ -7,32 +9,67 @@ import CandidateList from './components/CandidateList';
 import PositionDetails from './components/PositionDetails';
 import CandidateDetails from './components/CandidateDetails';
 import RecruitmentDashboard from './components/RecruitmentDashboard';
+import Login from './components/Auth/Login';
+import SignUp from './components/Auth/SignUp';
+import ProtectedRoute from './components/ProtectedRoute';
 
-
-
-
-
-import './App.css';
-
-function App() {
+const App = () => {
   return (
+    <HelmetProvider>
     <Router>
-      <Header />
-      <div className="container">
-        <Routes>
-          <Route path="/" element={<PositionList />} />
-          <Route path="/new-position" element={<PositionForm />} />
-          <Route path="/new-candidate" element={<CandidateForm />} />
-          <Route path="/list-candidate" element={<CandidateList />} />
-          <Route path="/position/:id" element={<PositionDetails />} />
-          <Route path="/candidate/:id" element={<CandidateDetails />} />
-          <Route path="/dashboard" element={<RecruitmentDashboard />} />
+      <Routes>
+       
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
 
-          
-        </Routes>
-      </div>
+        <Route path="/list-position" element={
+          <ProtectedRoute>
+            <PositionList />  
+          </ProtectedRoute>} />
+
+          <Route path="/new-position" element={
+          <ProtectedRoute>
+            <PositionForm />
+          </ProtectedRoute>} />
+
+          <Route path="/new-candidate" element={
+          <ProtectedRoute>
+            <CandidateForm />
+          </ProtectedRoute>} />
+
+          <Route path="/list-candidate" element={
+          <ProtectedRoute>
+            <CandidateList />
+          </ProtectedRoute>} />
+
+          <Route path="/position/:id" element={
+          <ProtectedRoute>
+            <PositionDetails />
+          </ProtectedRoute>} />
+
+          <Route path="/candidate/:id" element={
+          <ProtectedRoute>
+            <CandidateDetails />
+          </ProtectedRoute>} />
+
+          <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <RecruitmentDashboard />
+          </ProtectedRoute>} />
+
+       
+      </Routes>
     </Router>
+    </HelmetProvider>
   );
-}
+};
 
 export default App;
+
+
+
+     
+
+
+
+
