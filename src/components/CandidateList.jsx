@@ -17,6 +17,7 @@ export default function CandidateList() {
     // Estados para la paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage] = useState(10);
+  const [selectedLevel, setSelectedLevel] = useState(''); // Nuevo estado para el filtro de nivel
 
   useEffect(() => {
     const fetchData = async () => {
@@ -58,12 +59,13 @@ export default function CandidateList() {
     return position?.nombre || 'Posición no disponible';
   };
 
-  const getCurrencySymbol = (currency) => {
-    if (currency === 'PEN') return 'S/. ';
-    if (currency === 'USD') return '$ ';
-    return '$';
-  };
+ // const getCurrencySymbol = (currency) => {
+ //   if (currency === 'PEN') return 'S/. ';
+ //   if (currency === 'USD') return '$ ';
+ //   return '$';
+ // };
 
+  // Función de filtrado actualizada
   const filteredCandidates = candidates
     .filter(candidate => {
       const matchesPosition = selectedPosition ? 
@@ -73,7 +75,10 @@ export default function CandidateList() {
         candidate.apellido.toLowerCase().includes(searchTerm.toLowerCase()) ||
         candidate.pais.toLowerCase().includes(searchTerm.toLowerCase());
       
-      return matchesPosition && matchesSearch;
+      const matchesLevel = selectedLevel ? 
+        candidate.nivel === selectedLevel : true;
+      
+      return matchesPosition && matchesSearch && matchesLevel;
     })
     .sort((a, b) => b.fechaRegistro - a.fechaRegistro);
     // Lógica de paginación
@@ -146,7 +151,7 @@ export default function CandidateList() {
       </div>
   
       {/* Filters */}
-      <div className="mb-6 flex flex-col sm:flex-row gap-4">
+          <div className="mb-6 flex flex-col sm:flex-row gap-4">
         <input
           type="text"
           placeholder="Search by name, last name or country..."
@@ -154,16 +159,16 @@ export default function CandidateList() {
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
-            setCurrentPage(1); // Resetear a la primera página al buscar
+            setCurrentPage(1);
           }}
         />
         
-        <select
+            <select
           className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
           value={selectedPosition}
           onChange={(e) => {
             setSelectedPosition(e.target.value);
-            setCurrentPage(1); // Resetear a la primera página al cambiar posición
+            setCurrentPage(1);
           }}
         >
           <option value="">All Positions</option>
@@ -173,90 +178,110 @@ export default function CandidateList() {
             </option>
           ))}
         </select>
+
+            {/* Nuevo filtro por nivel */}
+    <select
+      className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+      value={selectedLevel}
+      onChange={(e) => {
+        setSelectedLevel(e.target.value);
+        setCurrentPage(1);
+      }}
+    >
+      <option value="">All Levels</option>
+      <option value="Level 0 - Intern">Level 0 - Intern</option>
+      <option value="Level 1 - Entry Level">Level 1 - Entry Level</option>
+      <option value="Level 2 - Junior">Level 2 - Junior</option>
+      <option value="Level 3 - Intermediate">Level 3 - Intermediate</option>
+      <option value="Level 4 - Senior">Level 4 - Senior</option>
+      <option value="Level 5 - Expert">Level 5 - Expert</option>
+    </select>
+
       </div>
   
       {/* Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div>
-          <table className="w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Country</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Salary</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gradient-to-r from-purple-50 to-blue-50">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Availability</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
-              </tr>
-            </thead>
-            
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentRecords.map((candidate, index) => (
-                <tr key={candidate.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {indexOfFirstRecord + index + 1}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                    {candidate.nombre}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {candidate.apellido}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {getPositionName(candidate.positionId)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {candidate.pais}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {getCurrencySymbol(candidate.moneda)}{candidate.salario}
-                  </td>
-                  <td 
-                    onClick={() => !updating && setEditingStatus(candidate.id)}
-                    className="px-6 py-4 whitespace-nowrap text-sm cursor-pointer"
-                  >
-                    {editingStatus === candidate.id ? (
-                      <select
-                        className="w-full px-2 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-                        value={candidate.estadoProceso}
-                        onChange={(e) => handleStatusChange(candidate.id, e.target.value)}
-                        autoFocus
-                        disabled={updating}
-                      >
-                        {processStatuses.map((status, index) => (
-                          <option key={index} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                    ) : (
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
-                          ${statusColors[candidate.estadoProceso?.toLowerCase().replace(/ /g, '-')]?.bg || 'bg-gray-100'} 
-                          ${statusColors[candidate.estadoProceso?.toLowerCase().replace(/ /g, '-')]?.text || 'text-gray-800'}`}>
-                          {candidate.estadoProceso}
-                        </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {candidate.disponibilidad}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <Link
-                      to={`/candidate/${candidate.id}`}
-                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-700 rounded-md text-sm font-medium transition-all bg-white hover:bg-gray-50"
-                    >
-                      <PencilSquareIcon className="w-4 h-4 mr-1.5" />
-                      <span>Edit</span>
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <div className="overflow-x-auto">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">#</th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Name</th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Last Name</th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[180px]">Position</th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Country</th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[150px] bg-gradient-to-r from-purple-50 to-blue-50">Status</th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Availability</th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[120px]">Level</th>
+          <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[100px]">Action</th>
+        </tr>
+      </thead>
+      
+      <tbody className="bg-white divide-y divide-gray-200">
+        {currentRecords.map((candidate, index) => (
+          <tr key={candidate.id} className="hover:bg-gray-50">
+            <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+              {indexOfFirstRecord + index + 1}
+            </td>
+            <td className="px-4 py-4 text-sm font-medium text-gray-900 max-w-[120px] truncate">
+              {candidate.nombre}
+            </td>
+            <td className="px-4 py-4 text-sm text-gray-500 max-w-[120px] truncate">
+              {candidate.apellido}
+            </td>
+            <td className="px-4 py-4 text-sm text-gray-500 max-w-[180px] truncate">
+              {getPositionName(candidate.positionId)}
+            </td>
+            <td className="px-4 py-4 text-sm text-gray-500 max-w-[100px] truncate">
+              {candidate.pais}
+            </td>
+            <td className="px-4 py-4 whitespace-nowrap">
+              {editingStatus === candidate.id ? (
+                <select
+                  className="w-full px-2 py-1 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                  value={candidate.estadoProceso}
+                  onChange={(e) => handleStatusChange(candidate.id, e.target.value)}
+                  autoFocus
+                  disabled={updating}
+                >
+                  {processStatuses.map((status, index) => (
+                    <option key={index} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span 
+                  onClick={() => !updating && setEditingStatus(candidate.id)}
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                    ${statusColors[candidate.estadoProceso?.toLowerCase().replace(/ /g, '-')]?.bg || 'bg-gray-100'} 
+                    ${statusColors[candidate.estadoProceso?.toLowerCase().replace(/ /g, '-')]?.text || 'text-gray-800'}
+                    cursor-pointer max-w-[150px] truncate`}
+                >
+                  {candidate.estadoProceso}
+                </span>
+              )}
+            </td>
+            <td className="px-4 py-4 text-sm text-gray-500 max-w-[120px] truncate">
+              {candidate.disponibilidad}
+            </td>
+            <td className="px-4 py-4 text-sm text-gray-500 max-w-[120px] truncate">
+              {candidate.nivel}
+            </td>
+            <td className="px-4 py-4 whitespace-nowrap text-sm font-medium">
+              <Link
+                to={`/candidate/${candidate.id}`}
+                className="inline-flex items-center px-3 py-1.5 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-700 rounded-md text-sm font-medium transition-all bg-white hover:bg-gray-50 whitespace-nowrap"
+              >
+                <PencilSquareIcon className="w-4 h-4 mr-1.5" />
+                <span>Edit</span>
+              </Link>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
   
         {filteredCandidates.length === 0 && (
           <div className="p-6 text-center text-gray-500">
