@@ -473,10 +473,10 @@ export default function CandidateForm() {
                 onChange={(e) => setFormData({...formData, disponibilidad: e.target.value})}
               >
                 <option value="">Select availability</option>
-                <option value="Inmediata">Immediate</option>
-                <option value="15 días">15 days</option>
-                <option value="1 mes">1 month</option>
-                <option value="Más de 1 mes">More than 1 month</option>
+                <option value="Immediate">Immediate</option>
+                <option value="15 days">15 days</option>
+                <option value="1 month">1 month</option>
+                <option value="More than 1 month">More than 1 month</option>
               </select>
             </div>
 
