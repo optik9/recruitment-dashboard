@@ -3,6 +3,7 @@ import { candidatesRef, positionsRef, configRef } from '../firebase/config';
 import { addDoc, getDocs, getDoc, doc } from 'firebase/firestore';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import {Helmet} from "react-helmet";
 
 export default function CandidateForm() {
   const navigate = useNavigate(); // Añadir este hook
@@ -21,6 +22,7 @@ export default function CandidateForm() {
     disponibilidad: '',
     fuente: '',
     estadoProceso: '',
+    fechaRegistro: new Date(), // Agregar esta línea
 
     fechaAplication:'', //new
     fechaPhoneScreen:'', //new
@@ -80,8 +82,12 @@ export default function CandidateForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await addDoc(candidatesRef, formData);
-      alert('Candidato registrado exitosamente!');
+      const candidateData = {
+        ...formData,
+        fechaRegistro: new Date() // Esto sobrescribirá cualquier valor existente con la fecha actual
+      };
+      await addDoc(candidatesRef, candidateData);
+      alert('Candidate successfully registered!');
       navigate('/list-candidate'); // Añadir esta línea
       setFormData({
         positionId: '',
@@ -94,6 +100,7 @@ export default function CandidateForm() {
         disponibilidad: '',
         fuente: '',
         estadoProceso: '',
+        fechaRegistro: new Date(), // Mantener esto en el reset
         fechaAplication:'',
 
         fechaPhoneScreen:'', //new
@@ -119,6 +126,10 @@ export default function CandidateForm() {
 
   return (
     <form onSubmit={handleSubmit} className="form-container">
+       <Helmet>
+      <title>Recruitment Outcode</title>
+      <meta name="New Candidate" content="New Candidate" />
+    </Helmet>
       <h2 className="form-title">New Candidate</h2>
       
       <div className="form-grid">
@@ -224,7 +235,7 @@ export default function CandidateForm() {
     </div>
     <input
       type="number"
-      required
+      
       className="form-input"
       value={formData.salario}
       onChange={(e) => setFormData({...formData, salario: e.target.value})}
@@ -270,6 +281,7 @@ export default function CandidateForm() {
                 <input
                   type="date"
                   className="form-input"
+                  required
                   value={formData.fechaOnboarding}
                   onChange={(e) => setFormData({...formData, fechaOnboarding: e.target.value})}
                 />
@@ -282,6 +294,7 @@ export default function CandidateForm() {
                 <input
                   type="date"
                   className="form-input"
+                  required
                   value={formData.fechaOffered}
                   onChange={(e) => setFormData({...formData, fechaOffered: e.target.value})}
                 />
@@ -294,6 +307,7 @@ export default function CandidateForm() {
                 <input
                   type="date"
                   className="form-input"
+                  required
                   value={formData.fechaAssesmentComplete}
                   onChange={(e) => setFormData({...formData, fechaAssesmentComplete: e.target.value})}
                 />
@@ -306,6 +320,7 @@ export default function CandidateForm() {
                 <input
                   type="date"
                   className="form-input"
+                  required
                   value={formData.fechaAssesmentSent}
                   onChange={(e) => setFormData({...formData, fechaAssesmentSent: e.target.value})}
                 />
@@ -318,6 +333,7 @@ export default function CandidateForm() {
                 <input
                   type="date"
                   className="form-input"
+                  required
                   value={formData.fechaPhoneScreen}
                   onChange={(e) => setFormData({...formData, fechaPhoneScreen: e.target.value})}
                 />
@@ -330,6 +346,7 @@ export default function CandidateForm() {
                 <input
                   type="date"
                   className="form-input"
+                  required
                   value={formData.fechaAplication}
                   onChange={(e) => setFormData({...formData, fechaAplication: e.target.value})}
                 />
@@ -343,6 +360,7 @@ export default function CandidateForm() {
                 <input
                   type="date"
                   className="form-input"
+                  required
                   value={formData.fechaTechInterview}
                   onChange={(e) => setFormData({...formData, fechaTechInterview: e.target.value})}
                 />
@@ -353,6 +371,7 @@ export default function CandidateForm() {
               <input
                 type="text"
                 className="form-input"
+                required
                 value={formData.Interviewer}
                 onChange={(e) => setFormData({...formData, Interviewer: e.target.value})}
               />
@@ -368,6 +387,7 @@ export default function CandidateForm() {
                 <input
                   type="date"
                   className="form-input"
+                  required
                   value={formData.fechaClientInterview}
                   onChange={(e) => setFormData({...formData, fechaClientInterview: e.target.value})}
                 />
@@ -380,6 +400,7 @@ export default function CandidateForm() {
                 <input
                   type="date"
                   className="form-input"
+                  required
                   value={formData.fechaContratacion}
                   onChange={(e) => setFormData({...formData, fechaContratacion: e.target.value})}
                 />
@@ -427,7 +448,7 @@ export default function CandidateForm() {
             <div className="form-group">
               <label>Experience Level</label>
               <select
-                required
+                
                 className="form-select"
                 value={formData.nivel}
                 onChange={(e) => setFormData({...formData, nivel: e.target.value})}
@@ -446,7 +467,7 @@ export default function CandidateForm() {
             <div className="form-group">
               <label>Availability</label>
               <select
-                required
+                
                 className="form-select"
                 value={formData.disponibilidad}
                 onChange={(e) => setFormData({...formData, disponibilidad: e.target.value})}

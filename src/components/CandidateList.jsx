@@ -14,6 +14,9 @@ export default function CandidateList() {
   const [loading, setLoading] = useState(true);
   const [editingStatus, setEditingStatus] = useState(null);
   const [updating, setUpdating] = useState(false);
+    // Estados para la paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,6 +76,14 @@ export default function CandidateList() {
       return matchesPosition && matchesSearch;
     })
     .sort((a, b) => b.fechaRegistro - a.fechaRegistro);
+    // Lógica de paginación
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentRecords = filteredCandidates.slice(indexOfFirstRecord, indexOfLastRecord);
+  const totalPages = Math.ceil(filteredCandidates.length / recordsPerPage);
+  
+    // Cambiar página
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);  
 
   const handleStatusChange = async (candidateId, newStatus) => {
     setUpdating(true);
@@ -124,12 +135,12 @@ export default function CandidateList() {
         
 
           <Link
-  to="/new-candidate"
-  className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-800 to-indigo-900 hover:from-blue-900 hover:to-indigo-900 text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
->
-  <PlusIcon className="w-5 h-5 mr-2" />
-  New Candidate
-</Link>
+            to="/new-candidate"
+            className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-800 to-indigo-900 hover:from-blue-900 hover:to-indigo-900 text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
+          >
+            <PlusIcon className="w-5 h-5 mr-2" />
+            New Candidate
+          </Link>
 
         </div>
       </div>
@@ -141,13 +152,19 @@ export default function CandidateList() {
           placeholder="Search by name, last name or country..."
           className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1); // Resetear a la primera página al buscar
+          }}
         />
         
         <select
           className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
           value={selectedPosition}
-          onChange={(e) => setSelectedPosition(e.target.value)}
+          onChange={(e) => {
+            setSelectedPosition(e.target.value);
+            setCurrentPage(1); // Resetear a la primera página al cambiar posición
+          }}
         >
           <option value="">All Positions</option>
           {positions.map(position => (
@@ -177,10 +194,10 @@ export default function CandidateList() {
             </thead>
             
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredCandidates.map((candidate, index) => (
+              {currentRecords.map((candidate, index) => (
                 <tr key={candidate.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {index + 1}
+                    {indexOfFirstRecord + index + 1}
                   </td>
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">
                     {candidate.nombre}
@@ -227,16 +244,13 @@ export default function CandidateList() {
                     {candidate.disponibilidad}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                   
-
                     <Link
-      to={`/candidate/${candidate.id}`}
-      className="inline-flex items-center px-3 py-1.5 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-700 rounded-md text-sm font-medium transition-all bg-white hover:bg-gray-50"
-    >
-      <PencilSquareIcon className="w-4 h-4 mr-1.5" />
-      <span>Edit</span>
-    </Link>
-
+                      to={`/candidate/${candidate.id}`}
+                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-700 rounded-md text-sm font-medium transition-all bg-white hover:bg-gray-50"
+                    >
+                      <PencilSquareIcon className="w-4 h-4 mr-1.5" />
+                      <span>Edit</span>
+                    </Link>
                   </td>
                 </tr>
               ))}
@@ -247,6 +261,58 @@ export default function CandidateList() {
         {filteredCandidates.length === 0 && (
           <div className="p-6 text-center text-gray-500">
             No candidates found matching your criteria
+          </div>
+        )}
+
+        {/* Paginación */}
+        {filteredCandidates.length > 0 && (
+          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              Showing <span className="font-medium">{indexOfFirstRecord + 1}</span> to{' '}
+              <span className="font-medium">
+                {Math.min(indexOfLastRecord, filteredCandidates.length)}
+              </span>{' '}
+              of <span className="font-medium">{filteredCandidates.length}</span> results
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 border rounded-md text-sm font-medium ${
+                  currentPage === 1
+                    ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                    : 'text-gray-700 bg-white hover:bg-gray-50'
+                }`}
+              >
+                Previous
+              </button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                <button
+                  key={number}
+                  onClick={() => paginate(number)}
+                  className={`px-3 py-1 border rounded-md text-sm font-medium ${
+                    currentPage === number
+                      ? 'bg-indigo-600 text-white'
+                      : 'text-gray-700 bg-white hover:bg-gray-50'
+                  }`}
+                >
+                  {number}
+                </button>
+              ))}
+              
+              <button
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 border rounded-md text-sm font-medium ${
+                  currentPage === totalPages
+                    ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                    : 'text-gray-700 bg-white hover:bg-gray-50'
+                }`}
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { auth } from '../firebase/config';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Link, useNavigate } from 'react-router-dom';
+import {Helmet} from "react-helmet";
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -35,6 +36,10 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <Helmet>
+      <title>Recruitment Outcode</title>
+      <meta name="Login" content="Login" />
+    </Helmet>
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
           Iniciar Sesión

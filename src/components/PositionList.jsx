@@ -12,6 +12,9 @@ export default function PositionList() {
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+    // Estados para la paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchPositions = async () => {
@@ -74,6 +77,14 @@ export default function PositionList() {
     
     return matchesSearch && matchesStatus;
   });
+  // Lógica de paginación
+  const indexOfLastRecord = currentPage * recordsPerPage;
+  const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
+  const currentRecords = filteredPositions.slice(indexOfFirstRecord, indexOfLastRecord);
+  const totalPages = Math.ceil(filteredPositions.length / recordsPerPage);
+
+  // Cambiar página
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   if (loading) return <div className="loading">Loading positions...</div>;
   if (error) return <div className="error">Error: {error}</div>;
@@ -89,12 +100,12 @@ export default function PositionList() {
             </p>
           </div>
           <Link
-  to="/new-position"
-  className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-800 to-indigo-900 hover:from-blue-900 hover:to-indigo-900 text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
->
-  <PlusIcon className="w-5 h-5 mr-2" />
-  New Position
-</Link>
+            to="/new-position"
+            className="inline-flex items-center px-4 py-2.5 bg-gradient-to-r from-blue-800 to-indigo-900 hover:from-blue-900 hover:to-indigo-900 text-white rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md"
+          >
+            <PlusIcon className="w-5 h-5 mr-2" />
+            New Position
+          </Link>
         </div>
       </div>
 
@@ -104,13 +115,19 @@ export default function PositionList() {
           placeholder="Search positions..."
           className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1); // Resetear a la primera página al buscar
+          }}
         />
         
         <select
           className="px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
           value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
+          onChange={(e) => {
+            setSelectedStatus(e.target.value);
+            setCurrentPage(1); // Resetear a la primera página al cambiar estado
+          }}
         >
           <option value="">All states</option>
           <option value="Active">Active</option>
@@ -161,10 +178,10 @@ export default function PositionList() {
             </thead>
             
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredPositions.map((position, index) => (
+              {currentRecords.map((position, index) => (
                 <tr key={position.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 text-sm font-medium text-gray-500">
-                    {index + 1}
+                    {indexOfFirstRecord + index + 1}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900 font-medium max-w-[180px] truncate">
                     {position.nombre}
@@ -191,24 +208,24 @@ export default function PositionList() {
                     {formatDate(position.fechaApertura)}
                   </td>
                   <td className="px-4 py-3">
-  <div className="flex items-center space-x-3">
-    <Link
-      to={`/new-candidate?positionId=${position.id}`}
-      className="inline-flex items-center px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-md text-sm font-medium transition-all shadow-sm hover:shadow-inner"
-    >
-      <UserPlusIcon className="w-4 h-4 mr-1.5" />
-      <span>Candidate</span>
-    </Link>
-    
-    <Link
-      to={`/position/${position.id}`}
-      className="inline-flex items-center px-3 py-1.5 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-700 rounded-md text-sm font-medium transition-all bg-white hover:bg-gray-50"
-    >
-      <PencilSquareIcon className="w-4 h-4 mr-1.5" />
-      <span>Edit</span>
-    </Link>
-  </div>
-</td>
+                    <div className="flex items-center space-x-3">
+                      <Link
+                        to={`/new-candidate?positionId=${position.id}`}
+                        className="inline-flex items-center px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-md text-sm font-medium transition-all shadow-sm hover:shadow-inner"
+                      >
+                        <UserPlusIcon className="w-4 h-4 mr-1.5" />
+                        <span>Candidate</span>
+                      </Link>
+                      
+                      <Link
+                        to={`/position/${position.id}`}
+                        className="inline-flex items-center px-3 py-1.5 border border-gray-300 hover:border-gray-400 text-gray-600 hover:text-gray-700 rounded-md text-sm font-medium transition-all bg-white hover:bg-gray-50"
+                      >
+                        <PencilSquareIcon className="w-4 h-4 mr-1.5" />
+                        <span>Edit</span>
+                      </Link>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -218,6 +235,58 @@ export default function PositionList() {
         {filteredPositions.length === 0 && (
           <div className="p-6 text-center text-gray-500">
             No positions found matching your criteria
+          </div>
+        )}
+
+        {/* Paginación */}
+        {filteredPositions.length > 0 && (
+          <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              Showing <span className="font-medium">{indexOfFirstRecord + 1}</span> to{' '}
+              <span className="font-medium">
+                {Math.min(indexOfLastRecord, filteredPositions.length)}
+              </span>{' '}
+              of <span className="font-medium">{filteredPositions.length}</span> results
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => paginate(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 border rounded-md text-sm font-medium ${
+                  currentPage === 1
+                    ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                    : 'text-gray-700 bg-white hover:bg-gray-50'
+                }`}
+              >
+                Previous
+              </button>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                <button
+                  key={number}
+                  onClick={() => paginate(number)}
+                  className={`px-3 py-1 border rounded-md text-sm font-medium ${
+                    currentPage === number
+                      ? 'bg-indigo-600 text-white'
+                      : 'text-gray-700 bg-white hover:bg-gray-50'
+                  }`}
+                >
+                  {number}
+                </button>
+              ))}
+              
+              <button
+                onClick={() => paginate(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 border rounded-md text-sm font-medium ${
+                  currentPage === totalPages
+                    ? 'text-gray-400 bg-gray-100 cursor-not-allowed'
+                    : 'text-gray-700 bg-white hover:bg-gray-50'
+                }`}
+              >
+                Next
+              </button>
+            </div>
           </div>
         )}
       </div>

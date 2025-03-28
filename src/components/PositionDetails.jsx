@@ -4,6 +4,7 @@ import { positionsRef, configRef } from '../firebase/config';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import '../App.css';
+import {Helmet} from "react-helmet";
 
 export default function PositionDetails() {
   const { id } = useParams();
@@ -118,6 +119,10 @@ export default function PositionDetails() {
 
   return (
     <div className="form-container">
+        <Helmet>
+      <title>Recruitment Outcode</title>
+      <meta name="Edit Position" content="Edit Position" />
+    </Helmet>
       <div className="form-header">
       <h2 className="form-title">Edit Position: {formData.nombre}</h2>
        

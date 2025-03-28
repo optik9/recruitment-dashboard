@@ -3,6 +3,7 @@ import { positionsRef, configRef } from '../firebase/config';
 import { addDoc, getDoc, doc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom'; // Añadir este import
 import { CheckCircleIcon } from '@heroicons/react/24/outline';
+import {Helmet} from "react-helmet";
 
 export default function PositionForm() {
   const navigate = useNavigate(); // Añadir este hook
@@ -73,6 +74,10 @@ export default function PositionForm() {
 
   return (
     <form onSubmit={handleSubmit} className="form-container">
+        <Helmet>
+      <title>Recruitment Outcode</title>
+      <meta name="New Position" content="New Position" />
+    </Helmet>
       <h2 className="form-title">New Open Position</h2>
       
       {/* Sección información básica */}

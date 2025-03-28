@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { candidatesRef, positionsRef } from '../firebase/config';
 import { getDocs } from 'firebase/firestore';
+import {Helmet} from "react-helmet";
 
 const COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#6EE7B7'];
 
@@ -108,20 +109,24 @@ export default function RecruitmentDashboard() {
     }))
   };
 
-  if (loading) return <div className="p-4 text-center">Cargando dashboard...</div>;
+  if (loading) return <div className="p-4 text-center">Loading dashboard...</div>;
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard de Reclutamiento</h1>
+       <Helmet>
+      <title>Recruitment Outcode</title>
+      <meta name="Dashboard" content="Dashboard" />
+    </Helmet>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Recruitment Dashboard</h1>
       
       {/* Métricas principales */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-gray-500">Candidatos Totales</h3>
+          <h3 className="text-gray-500">Total Candidates</h3>
           <p className="text-2xl font-bold">{metrics.totalCandidates}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-gray-500">Posiciones Abiertas</h3>
+          <h3 className="text-gray-500">Open Positions</h3>
           <p className="text-2xl font-bold">{metrics.openPositions}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow">
@@ -129,7 +134,7 @@ export default function RecruitmentDashboard() {
           <p className="text-2xl font-bold">{metrics.hired}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-gray-500">Tasa de Contratación</h3>
+          <h3 className="text-gray-500">Hiring Rate</h3>
           <p className="text-2xl font-bold">{metrics.hireRate}%</p>
         </div>
       </div>
@@ -138,7 +143,7 @@ export default function RecruitmentDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Sección Candidatos */}
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Estados de Candidatos</h3>
+          <h3 className="text-lg font-semibold mb-4">Candidate Status</h3>
           <PieChart width={300} height={300}>
             <Pie
               data={processData.candidatesByStatus}
@@ -159,7 +164,7 @@ export default function RecruitmentDashboard() {
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Distribución por País</h3>
+          <h3 className="text-lg font-semibold mb-4">Distribution by Country</h3>
           <BarChart width={300} height={250} data={processData.candidatesByCountry}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
@@ -170,7 +175,7 @@ export default function RecruitmentDashboard() {
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Fuentes de Reclutamiento</h3>
+          <h3 className="text-lg font-semibold mb-4">Recruitment Sources</h3>
           <BarChart width={300} height={250} data={processData.recruitmentSources}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
@@ -182,7 +187,7 @@ export default function RecruitmentDashboard() {
 
         {/* Sección Posiciones */}
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Estados de Posiciones</h3>
+          <h3 className="text-lg font-semibold mb-4">Position Status</h3>
           <BarChart width={300} height={250} data={processData.positionsByStatus}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
@@ -193,7 +198,7 @@ export default function RecruitmentDashboard() {
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Prioridad de Posiciones</h3>
+          <h3 className="text-lg font-semibold mb-4">Position Priority</h3>
           <PieChart width={300} height={300}>
             <Pie
               data={processData.positionsByPriority}
@@ -214,7 +219,7 @@ export default function RecruitmentDashboard() {
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Posiciones por Reclutador</h3>
+          <h3 className="text-lg font-semibold mb-4">Positions by Recruiter</h3>
           <BarChart width={300} height={250} data={processData.positionsByRecruiter}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
@@ -226,7 +231,7 @@ export default function RecruitmentDashboard() {
 
         {/* Sección Análisis Adicional */}
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Contrataciones por Cliente</h3>
+          <h3 className="text-lg font-semibold mb-4">Hiring by Client</h3>
           <BarChart width={300} height={250} data={processData.hiresPerClient}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="name" />
@@ -237,7 +242,7 @@ export default function RecruitmentDashboard() {
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Salario Promedio por Moneda</h3>
+          <h3 className="text-lg font-semibold mb-4">Average Salary by Currency</h3>
           <BarChart width={300} height={250} data={processData.salaryByCurrency}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="currency" />
@@ -250,7 +255,7 @@ export default function RecruitmentDashboard() {
         </div>
 
         <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">Niveles de Experiencia</h3>
+          <h3 className="text-lg font-semibold mb-4">Experience Level</h3>
           <BarChart width={300} height={250} data={Object.entries(candidates.reduce((acc, c) => {
             acc[c.nivel] = (acc[c.nivel] || 0) + 1;
             return acc;
